@@ -18,6 +18,21 @@ class CustomUser(AbstractUser):
             return super().save(*args, **kwargs)
 
 
+class TeacherManager(BaseUserManager):
+    def get_queryset(self,*args, **kwargs):
+        results = super().get_queryset(*args, **kwargs)
+        return results.filter(role = CustomUser.Role.TEACHER)
+
+
+class Teacher(CustomUser):
+    base_role = CustomUser.Role.TEACHER
+    teacher = TeacherManager()
+    class Meta:
+        proxy = True
+    def welcome(self):
+        return "For teachers only"
+
+
 
 class StudentManager(BaseUserManager):
     def get_queryset(self, *args, **kwargs):
