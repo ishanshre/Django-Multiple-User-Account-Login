@@ -3,15 +3,21 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 # Create your models here.
 
 
+class AdminManager(BaseUserManager):
+    def get_queryset(self, *args, **kwargs):
+        results = super().get_queryset(*args, **kwargs)
+        return results.filter(role=CustomUser.Role.ADMIN)
+
 class CustomUser(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = "ADMIN", 'Admin'
         TEACHER = "TEACHER", 'Teacher'
         STUDENT = "STUDENT", 'Student'
     
+
     base_role = Role.ADMIN
     role = models.CharField(max_length=20, choices=Role.choices)
-
+    admin = AdminManager()
     def save(self, *args, **kwargs):
         if not self.pk:
             self.role = self.base_role
