@@ -4,12 +4,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 # Create your models here.
 
-
-class AdminManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=CustomUser.Role.ADMIN)
-
 class CustomUser(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = "ADMIN", 'Admin'
@@ -19,7 +13,6 @@ class CustomUser(AbstractUser):
 
     base_role = Role.ADMIN
     role = models.CharField(max_length=20, choices=Role.choices)
-    admin = AdminManager()
     def save(self, *args, **kwargs):
         if not self.pk:
             self.role = self.base_role
